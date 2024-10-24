@@ -66,7 +66,7 @@ def toc_to_json(toc_lines):
 def main():
     pdf_file_path = "Sample-for-chatbot.pdf"  # Replace with your PDF file path
 
-    output_file = "toc_output.json"
+    output_file = "structure.json"
 
     toc_lines = extract_toc_pdf(pdf_file_path)
     json_data = toc_to_json(toc_lines)
