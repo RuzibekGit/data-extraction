@@ -20,32 +20,29 @@ def extract_toc_pdf(pdf_path):
     return memo
 
 
+def insert_entry(structure, number, title):
+    if number.endswith("."):
+         last_dot_index = number.rfind('.')
+         number = number[:last_dot_index] + number[last_dot_index + 1:]
+         levels = number.split('.')
+         levels[-1] = levels[-1] + "."
+    else:
+         levels = number.split('.')
+
+    current = structure
+    for i, level in enumerate(levels):
+         current = current.setdefault(".".join(levels[:i+1]), {})
+         if i == 0:
+             current["title"] = title
+             current = current.setdefault("sections", {})
+         if i == 1:
+             current["title"] = title
+             current = current.setdefault("subsections", {})
+         elif i == 2:
+             current["title"] = title
+
+
 def toc_to_json(toc_lines):
-    def insert_entry(structure, number, title):
-        if number.endswith("."):
-            last_dot_index = number.rfind('.')
-            number = number[:last_dot_index] + number[last_dot_index + 1:]
-            levels = number.split('.')
-            levels[-1] = levels[-1] + "."
-
-        else:
-            levels = number.split('.')
-
-        current = structure
-        for i, level in enumerate(levels):
-            current = current.setdefault(".".join(levels[:i+1]), {})
-
-            if i == 0:
-                current["title"] = title
-                current = current.setdefault("sections", {})
-
-            if i == 1:
-                current["title"] = title
-                current = current.setdefault("subsections", {})
-            elif i == 2:
-                current["title"] = title
-        # current["title"] = title
-
     json_structure = {}
 
     for line in reversed(toc_lines):
@@ -56,7 +53,9 @@ def toc_to_json(toc_lines):
 
         title = parts[1].strip()
         insert_entry(json_structure, number, title)
-
+    
+    # return json_structure # return reversed json
+    
     json_structure = dict(sorted(json_structure.items()))
     memo = dict()
     for i in range(1, 14):
